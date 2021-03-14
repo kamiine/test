@@ -46,7 +46,7 @@ pending_vertex_timeout = '30min'
 #
 # It must be publicly available in order to allow peers to connect to this node.
 # If the port is set to 0, the actual bound port will be substituted.
-public_address = '<IP ADDRESS>:0'
+public_address = '52.15.154.232:0'
 
 # Address to bind to for listening.
 # If port is set to 0, a random port will be used.
