@@ -1,18 +1,32 @@
 FROM ubuntu:latest
 
 RUN apt update -y  && apt install -y wget coreutils
+RUN apt-get update && apt-get upgrade -y  && \
+			apt-get -y install cmake && \
+			apt-get -y install curl && \
+ 			apt-get -y install apt-utils && \
+			apt-get -y install wget coreutils
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+RUN apt-get install -y libssl-dev  \
+			pkg-config \
+			build-essential  \
+			git  \
+			jq
 
-RUN wget --content-disposition https://github.com/CasperLabs/casper-node/releases/download/v1.6.0/casper-client_1.6.0-2465_amd64.deb
-RUN wget --content-disposition https://github.com/CasperLabs/casper-node/releases/download/v1.6.0/casper-node_1.6.0-2465_amd64.deb
-
-RUN apt install -y ./casper-client_1.6.0-2465_amd64.deb ./casper-node_1.6.0-2465_amd64.deb
+RUN curl -JLO https://bintray.com/casperlabs/debian/download_file?file_path=casper-node-launcher_0.2.0-0_amd64.deb
+RUN curl -JLO https://bintray.com/casperlabs/debian/download_file?file_path=casper-client_0.7.6-0_amd64.deb
+RUN apt-get install -y ./casper-client_0.7.6-0_amd64.deb ./casper-node-launcher_0.2.0-0_amd64.deb
+RUN cd /etc/casper && chmod +x ./pull_casper_node_version.sh && ./pull_casper_node_version.sh 1_0_0
+RUN sed -i "/trusted_hash =/c\trusted_hash = '$(curl -s 167.86.77.252:8888/status | jq -r .last_added_block_info.hash | tr -d '\n')'" /etc/casper/1_0_0/config.toml
+RUN casper-client keygen /etc/casper/validator_keys/
 
 VOLUME /etc/casper/validator_keys
+VOLUME /etc/casper/1_0_0/
+RUN rm /etc/casper/1_0_0/config.toml
 
-RUN rm /etc/casper/config.toml
-VOLUME /etc/casper/config.toml
 
 COPY ./docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD ["validator" "/etc/casper/config.toml"]
+CMD ["validator" "/etc/casper/1_0_0/config.toml"]
