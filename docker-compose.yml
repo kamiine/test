@@ -9,18 +9,20 @@ services:
     container_name: casper-node
     ports:
         - "7777:7777"
+        - "8888:8888"
+        - "9999:9999"
         - "35000:35000"
         - "34552:34552"
     volumes: 
-        - "./etc/casper/config.toml:/etc/casper/config.toml"
-        - "./etc/casper/validator_keys:/etc/casper/validator_keys"
+        - "./etc/casper/1_0_0/config.toml:/etc/casper/1_0_0/config.toml"
+        - "./etc/casper/1_0_0/chainspec.toml:/etc/casper/1_0_0/chainspec.toml"
+        - "./etc/casper/1_0_0/accounts.csv:/etc/casper/1_0_0/accounts.csv"
         - "storage:/root/.local/share/casper-node"
-        - "db:/var/lib/casper/casper-node"
-        - "contracts:/contracts"
-    command: validator /etc/casper/config.toml
+        - "db:/var/lib/casper/1_0_0/casper-node"
+    command: validator /etc/casper/1_0_0/config.toml
+
     restart: unless-stopped
   
   build-env:
     build: ./build-env
-    volumes:
-        - "contracts:/build"
+

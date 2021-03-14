@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e
 
 EXIT_CODE=0
@@ -20,6 +21,6 @@ if [[ $NEED_KEYS ]]; then
 fi
 
 #echo "Validator Identity:"
-#/usr/bin/cat ${PATH}public_key_hex; echo
+/usr/bin/cat ${PATH}public_key_hex; echo
 
-exec /usr/bin/casper-node "$@"
+exec /var/lib/casper/bin/1_0_0/casper-node "$@"
